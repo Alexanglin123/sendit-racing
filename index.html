@@ -784,6 +784,68 @@ body::before {
 }
 .stack-row .sd { font-size: 13px; color: var(--muted); }
 
+
+/* ── POINTS / WALLET SCREEN ── */
+.wallet-shell { max-width: 420px; margin: 0 auto; padding: 0 0 80px; }
+
+.wallet-hero {
+  background: #5c1a1a;
+  padding: 28px 20px 20px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.wallet-hero::before {
+  content: ''; position: absolute;
+  top: -40px; left: 50%; transform: translateX(-50%);
+  width: 260px; height: 200px;
+  background: radial-gradient(circle at 50% 0%, rgba(255,238,50,0.2), transparent 70%);
+  pointer-events: none;
+}
+.wallet-pts-lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,238,50,0.6); margin-bottom: 4px; }
+.wallet-pts { font-family: 'Bebas Neue', var(--display); font-size: 64px; letter-spacing: 3px; color: #ffee32; line-height: 1; }
+.wallet-pts span { font-size: 18px; color: rgba(255,238,50,0.6); letter-spacing: 1px; margin-left: 4px; }
+.wallet-level { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; background: rgba(255,238,50,0.1); border: 1px solid rgba(255,238,50,0.2); border-radius: 20px; padding: 5px 14px; }
+.wallet-level-lbl { font-size: 12px; color: rgba(255,238,50,0.7); }
+.wallet-level-val { font-size: 12px; font-weight: 600; color: #ffee32; }
+
+.tokens-row { display: flex; align-items: center; justify-content: space-between; background: rgba(255,238,50,0.08); border: 1px solid rgba(255,238,50,0.2); border-radius: 10px; padding: 12px 16px; margin: 12px 16px 0; }
+.tokens-left .tl { font-size: 11px; color: #a08040; text-transform: uppercase; letter-spacing: 0.8px; }
+.tokens-left .tv { font-family: var(--mono); font-size: 26px; font-weight: 500; color: #ffee32; }
+.tokens-use { background: #5c1a1a; color: #ffee32; border: 1px solid rgba(255,238,50,0.3); border-radius: 8px; padding: 8px 14px; font-family: var(--sans); font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+.tokens-use:hover { opacity: 0.85; }
+
+.progress-section { padding: 16px 16px 0; }
+.prog-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.prog-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #a08040; }
+.prog-val { font-size: 11px; color: #a08040; font-family: var(--mono); }
+.prog-track { height: 7px; background: #2e2000; border-radius: 4px; overflow: hidden; }
+.prog-fill { height: 100%; background: #5c1a1a; border-radius: 4px; position: relative; }
+.prog-fill::after { content: ''; position: absolute; right: 0; top: 0; height: 100%; width: 4px; background: #ffee32; border-radius: 2px; }
+.prog-next { font-size: 11px; color: #a08040; margin-top: 5px; }
+.prog-next span { color: #ffee32; }
+
+.how-to-earn { margin: 16px 16px 0; }
+.earn-card { background: #1a1200; border: 1px solid rgba(255,238,50,0.1); border-radius: 12px; overflow: hidden; }
+.earn-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid rgba(255,238,50,0.06); }
+.earn-row:last-child { border-bottom: none; }
+.earn-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: rgba(92,26,26,0.5); }
+.earn-info { flex: 1; }
+.earn-info .en { font-size: 13px; font-weight: 500; color: #fff9e6; }
+.earn-info .es { font-size: 11px; color: #a08040; margin-top: 1px; }
+.earn-pts { font-family: var(--mono); font-size: 14px; font-weight: 500; color: #ffee32; }
+
+.offers-section { padding: 16px 16px 0; }
+.offer-card-p { background: #1a1200; border: 1px solid rgba(255,238,50,0.1); border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+.offer-card-p .oh { background: #5c1a1a; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+.offer-card-p .oh .ot { font-size: 14px; font-weight: 500; color: #ffee32; }
+.offer-card-p .oh .oe { font-size: 11px; color: rgba(255,238,50,0.6); }
+.offer-card-p .ob { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+.offer-card-p .ob .od { font-size: 13px; color: #fff9e6; }
+.offer-card-p .ob .ov { font-size: 11px; color: #a08040; margin-top: 2px; }
+.redeem-btn-p { background: #5c1a1a; color: #ffee32; border: 1px solid rgba(255,238,50,0.3); border-radius: 7px; padding: 7px 12px; font-family: var(--sans); font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; white-space: nowrap; }
+.redeem-btn-p:hover { opacity: 0.85; }
+.redeem-toast { display: none; font-size: 11px; color: #ffee32; text-align: center; padding: 8px; background: rgba(92,26,26,0.5); }
+.redeem-toast.show { display: block; }
+
 /* scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -1057,12 +1119,21 @@ body::before {
           <span class="rv" id="r-laps">—</span>
         </div>
         <div class="result-row">
+          <span class="rl">Points earned</span>
+          <span class="rv" id="r-pts" style="color:#ffee32;">—</span>
+        </div>
+        <div class="result-row">
+          <span class="rl">Tokens earned</span>
+          <span class="rv" id="r-tokens" style="color:#ffee32;">—</span>
+        </div>
+        <div class="result-row">
           <span class="rl">Car</span>
           <span class="rv" id="r-result-car">—</span>
         </div>
       </div>
       <button class="btn-again" onclick="pReset()">RACE AGAIN</button>
       <button class="btn-see-lb" onclick="pShowLB()">See leaderboard</button>
+      <button class="btn-see-lb" style="margin-top:8px;border-color:rgba(255,238,50,0.3);color:#ffee32;" onclick="pShowWallet()">View my points & tokens</button>
     </div>
   </div>
 
@@ -1076,15 +1147,121 @@ body::before {
     </div>
   </div>
 
+
+  <!-- P-SCREEN: wallet / points -->
+  <div id="ps-wallet" style="display:none;" class="wallet-shell">
+    <div class="wallet-hero">
+      <div class="wallet-pts-lbl">Send It points</div>
+      <div class="wallet-pts" id="w-pts">2,840 <span>pts</span></div>
+      <div class="wallet-level">
+        <span class="wallet-level-lbl">Level</span>
+        <span class="wallet-level-val" id="w-level">4 — Racer</span>
+      </div>
+    </div>
+
+    <div class="tokens-row">
+      <div class="tokens-left">
+        <div class="tl">Free tokens</div>
+        <div class="tv" id="w-tokens">12</div>
+      </div>
+      <button class="tokens-use" onclick="showRedeemToast()">Redeem at venue →</button>
+    </div>
+    <div class="redeem-toast" id="redeem-toast">✓ Show this screen at the bar to redeem</div>
+
+    <div class="progress-section">
+      <div class="prog-head">
+        <div class="prog-lbl">Progress to Level 5</div>
+        <div class="prog-val" id="w-prog-val">2,840 / 4,000</div>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="w-prog-fill" style="width:71%"></div></div>
+      <div class="prog-next">Need <span id="w-prog-need">1,160 pts</span> to reach Level 5 — Champion</div>
+    </div>
+
+    <div class="how-to-earn">
+      <div class="section-head" style="margin-bottom:10px">How to earn points</div>
+      <div class="earn-card">
+        <div class="earn-row">
+          <div class="earn-icon">🏎</div>
+          <div class="earn-info">
+            <div class="en">Complete a racing session</div>
+            <div class="es">Any Send It venue</div>
+          </div>
+          <div class="earn-pts">+200 pts</div>
+        </div>
+        <div class="earn-row">
+          <div class="earn-icon">🏆</div>
+          <div class="earn-info">
+            <div class="en">Set a personal best lap</div>
+            <div class="es">Beat your previous best time</div>
+          </div>
+          <div class="earn-pts">+150 pts</div>
+        </div>
+        <div class="earn-row">
+          <div class="earn-icon">⭐</div>
+          <div class="earn-info">
+            <div class="en">Reach top 3 leaderboard</div>
+            <div class="es">Daily leaderboard position</div>
+          </div>
+          <div class="earn-pts">+500 pts</div>
+        </div>
+        <div class="earn-row">
+          <div class="earn-icon">📱</div>
+          <div class="earn-info">
+            <div class="en">Share your result</div>
+            <div class="es">Post to Instagram/TikTok</div>
+          </div>
+          <div class="earn-pts">+50 pts</div>
+        </div>
+        <div class="earn-row">
+          <div class="earn-icon">👥</div>
+          <div class="earn-info">
+            <div class="en">Bring a friend</div>
+            <div class="es">They complete their first session</div>
+          </div>
+          <div class="earn-pts">+300 pts</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="offers-section">
+      <div class="section-head" style="margin-bottom:10px">Token offers near you</div>
+      <div class="offer-card-p">
+        <div class="oh"><div class="ot">Free AR Darts session</div><div class="oe">Expires Fri</div></div>
+        <div class="ob">
+          <div><div class="od">1 session on us</div><div class="ov">The Doylo · use 3 tokens</div></div>
+          <button class="redeem-btn-p" onclick="redeemOffer(this, 3)">Redeem</button>
+        </div>
+      </div>
+      <div class="offer-card-p">
+        <div class="oh" style="background:#3a1a00;"><div class="ot">2-for-1 Golf sim</div><div class="oe">Weekend only</div></div>
+        <div class="ob">
+          <div><div class="od">Bring a mate free</div><div class="ov">Canterbury LC · use 5 tokens</div></div>
+          <button class="redeem-btn-p" onclick="redeemOffer(this, 5)">Redeem</button>
+        </div>
+      </div>
+      <div class="offer-card-p">
+        <div class="oh" style="background:#1a1a00;"><div class="ot">Top 3 challenge — 500 pts</div><div class="oe">This week</div></div>
+        <div class="ob">
+          <div><div class="od">Finish top 3 this weekend</div><div class="ov">All venues · free to enter</div></div>
+          <button class="redeem-btn-p" onclick="enterChallenge(this)">Enter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Player bottom nav -->
   <nav class="p-nav">
     <button class="p-nav-btn active" id="pnav-checkin" onclick="pNavTo('checkin')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       Check in
     </button>
+    <button class="p-nav-btn" id="pnav-wallet" onclick="pShowWallet()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>
+      Points
+    </button>
     <button class="p-nav-btn" id="pnav-lb" onclick="pShowLB()">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 20V10M12 20V4M18 20v-6"/></svg>
-      Leaderboard
+      Ranks
     </button>
   </nav>
 </div>
@@ -1386,6 +1563,13 @@ function pFinish() {
     leaderboard.sort((a,b)=>a.lapMs-b.lapMs);
     renderVenueLB();
   }
+  // Award points for session
+  if(mySession.laps.length > 0) {
+    playerPoints += mySession.laps.length * 200;
+    playerTokens += mySession.laps.length; // 1 token per lap
+    // PB bonus
+    if(pb && (!mySession.laps.find || true)) playerPoints += 150;
+  }
   const rank = pb ? leaderboard.findIndex(e=>e.lapMs===pb && e.name===mySession.playerName)+1 : '—';
   setText('r-name', mySession.playerName);
   setText('r-car', mySession.car);
@@ -1393,6 +1577,10 @@ function pFinish() {
   setText('r-laps', mySession.laps.length);
   setText('r-result-car', mySession.car);
   setText('r-rank', `#${rank}`);
+  var earnedPts = mySession.laps.length * 200 + (pb ? 150 : 0);
+  var earnedTokens = mySession.laps.length;
+  setText('r-pts', '+' + earnedPts.toLocaleString() + ' pts');
+  setText('r-tokens', '+' + earnedTokens + ' tokens');
   showPScreen('result');
   pNavActive('result');
 }
@@ -1514,17 +1702,68 @@ function showMain(tab) {
 }
 
 function showPScreen(id) {
-  ['checkin','live','result','lb'].forEach(s => {
+  ['checkin','live','result','lb','wallet'].forEach(s => {
     const el = document.getElementById(`ps-${s}`);
     if(el) el.style.display = (s===id)?'block':'none';
   });
 }
 
 function pNavActive(id) {
-  ['checkin','lb'].forEach(n => {
+  ['checkin','wallet','lb'].forEach(n => {
     const el = document.getElementById(`pnav-${n}`);
     if(el) el.classList.toggle('active', n===id || (n==='checkin' && (id==='live'||id==='result')));
   });
+}
+
+// ══ WALLET / POINTS ══════════════════════════════════════
+var playerPoints = 2840;
+var playerTokens = 12;
+
+function pShowWallet() {
+  updateWallet();
+  showPScreen('wallet');
+  pNavActive('wallet');
+}
+
+function updateWallet() {
+  var laps = mySession ? mySession.laps.length : 0;
+  var sessionPts = laps * 200;
+  var total = playerPoints + sessionPts;
+  setText('w-pts', total.toLocaleString() + ' pts');
+  var level = total < 1000 ? '1 — Novice' : total < 2000 ? '2 — Driver' : total < 3000 ? '3 — Racer' : total < 4000 ? '4 — Racer' : '5 — Champion';
+  setText('w-level', level);
+  setText('w-tokens', playerTokens);
+  var nextLevel = Math.ceil(total / 1000) * 1000;
+  var pct = Math.min(100, Math.round((total % 1000) / 10));
+  var need = nextLevel - total;
+  document.getElementById('w-prog-fill').style.width = pct + '%';
+  setText('w-prog-val', total.toLocaleString() + ' / ' + nextLevel.toLocaleString());
+  setText('w-prog-need', need.toLocaleString() + ' pts');
+}
+
+function showRedeemToast() {
+  var t = document.getElementById('redeem-toast');
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
+
+function redeemOffer(btn, cost) {
+  if (playerTokens < cost) {
+    btn.textContent = 'Not enough';
+    setTimeout(function() { btn.textContent = 'Redeem'; }, 2000);
+    return;
+  }
+  playerTokens -= cost;
+  btn.textContent = '✓ Redeemed';
+  btn.style.opacity = '0.5';
+  btn.style.pointerEvents = 'none';
+  updateWallet();
+}
+
+function enterChallenge(btn) {
+  btn.textContent = '✓ Entered!';
+  btn.style.opacity = '0.5';
+  btn.style.pointerEvents = 'none';
 }
 
 // ══ INIT ══════════════════════════════════════════════════
