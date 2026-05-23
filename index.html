@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send It! Racing — Live Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #080810;
+  --s1:       #0f0f1c;
+  --s2:       #161625;
+  --s3:       #1e1e32;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.13);
+  --purple:   #6c5ce7;
+  --purple2:  #a29bfe;
+  --teal:     #00cec9;
+  --teal2:    #55efc4;
+  --amber:    #fdcb6e;
+  --red:      #ff7675;
+  --text:     #f0eeff;
+  --muted:    #6e6a8a;
+  --mono:     'DM Mono', monospace;
+  --display:  'Bebas Neue', sans-serif;
+  --sans:     'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(8,8,16,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 28px; height: 58px; gap: 20px;
+}
+.logo {
+  font-family: var(--display);
+  font-size: 26px; letter-spacing: 1px;
+  color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-dot { color: var(--purple); }
+.logo-sub {
+  font-size: 11px; font-weight: 300;
+  color: var(--muted);
+  letter-spacing: 2px; text-transform: uppercase;
+  border-left: 1px solid var(--border2);
+  padding-left: 16px; margin-left: 4px;
+}
+.topbar-tabs { display: flex; gap: 4px; margin-left: auto; }
+.tab-btn {
+  background: none; border: 1px solid transparent;
+  color: var(--muted); font-family: var(--sans);
+  font-size: 13px; font-weight: 500;
+  padding: 7px 18px; border-radius: 8px;
+  cursor: pointer; transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+.tab-btn:hover { color: var(--text); border-color: var(--border2); }
+.tab-btn.active {
+  color: var(--purple2);
+  border-color: rgba(108,92,231,0.4);
+  background: rgba(108,92,231,0.1);
+}
+.live-chip {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--teal2);
+  background: rgba(0,206,201,0.08);
+  border: 1px solid rgba(0,206,201,0.2);
+  border-radius: 20px; padding: 5px 12px;
+  margin-left: 12px;
+}
+.live-pip {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--teal2);
+  animation: pip 1.8s ease-in-out infinite;
+}
+@keyframes pip { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(0.7)} }
+
+/* ── SCREENS ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── VENUE SCREEN ── */
+.venue-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr 260px;
+  grid-template-rows: auto 1fr;
+  min-height: calc(100vh - 58px);
+  gap: 0;
+}
+
+/* LEFT COLUMN */
+.col-left {
+  border-right: 1px solid var(--border);
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+.telem-hero {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.telem-hero::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(108,92,231,0.2), transparent 70%);
+  pointer-events: none;
+}
+.telem-hero .lbl {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 6px;
+}
+.telem-hero .laptime {
+  font-family: var(--display);
+  font-size: 52px; letter-spacing: 2px;
+  color: var(--purple2); line-height: 1;
+}
+.telem-hero .best {
+  font-family: var(--mono);
+  font-size: 14px; color: var(--teal2);
+  margin-top: 6px;
+}
+
+.stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.stat-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px;
+}
+.stat-card .sv {
+  font-family: var(--mono); font-size: 24px; font-weight: 500;
+}
+.stat-card .sl {
+  font-size: 10px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.8px;
+  margin-top: 3px;
+}
+
+.inputs-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px;
+}
+.input-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 8px;
+}
+.input-row:last-child { margin-bottom: 0; }
+.input-label {
+  font-size: 11px; color: var(--muted);
+  width: 58px; letter-spacing: 0.3px;
+}
+.track {
+  flex: 1; height: 6px;
+  background: var(--s3); border-radius: 3px;
+  overflow: hidden;
+}
+.fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.08s linear;
+}
+.fill.thr { background: var(--teal2); }
+.fill.brk { background: var(--red); }
+.input-val {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--muted); width: 30px; text-align: right;
+}
+
+/* SESSION FORM */
+.section-head {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px;
+}
+.form-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+}
+.form-card label {
+  font-size: 11px; color: var(--muted);
+  display: block; margin-bottom: 5px;
+  letter-spacing: 0.3px;
+}
+.form-card input, .form-card select {
+  width: 100%; padding: 9px 12px;
+  background: var(--s3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text); font-family: var(--sans);
+  font-size: 14px; outline: none;
+  margin-bottom: 10px;
+  transition: border-color 0.15s;
+}
+.form-card input:focus, .form-card select:focus {
+  border-color: var(--purple);
+}
+.form-card select option { background: var(--s2); }
+.btn-go {
+  width: 100%; padding: 11px;
+  background: var(--purple); color: white;
+  border: none; border-radius: 9px;
+  font-family: var(--sans); font-size: 14px;
+  font-weight: 600; cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-go:hover { opacity: 0.88; }
+.btn-go:active { transform: scale(0.98); }
+.btn-end {
+  width: 100%; padding: 9px; margin-top: 8px;
+  background: transparent;
+  border: 1px solid rgba(255,118,117,0.3);
+  color: var(--red); border-radius: 9px;
+  font-family: var(--sans); font-size: 13px;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-end:hover { background: rgba(255,118,117,0.08); }
+
+.active-sess {
+  background: rgba(108,92,231,0.08);
+  border: 1px solid rgba(108,92,231,0.3);
+  border-radius: 12px; padding: 14px;
+}
+.active-sess .player-name {
+  font-size: 16px; font-weight: 600;
+  margin-bottom: 2px;
+}
+.active-sess .car-name {
+  font-size: 12px; color: var(--muted); margin-bottom: 10px;
+}
+.lap-chip {
+  display: flex; justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.lap-chip:last-child { border-bottom: none; }
+.lap-chip .lt { font-family: var(--mono); }
+.lap-chip .lt.pb { color: var(--teal2); }
+.lap-chip .ln { font-size: 11px; color: var(--muted); }
+
+/* CENTRE COLUMN */
+.col-centre {
+  padding: 24px 28px;
+  border-right: 1px solid var(--border);
+}
+
+/* speedometer-style arc */
+.speed-arc-wrap {
+  display: flex; justify-content: center;
+  margin-bottom: 28px;
+}
+.speed-arc {
+  position: relative; width: 220px; height: 120px;
+}
+.speed-arc svg { overflow: visible; }
+.speed-arc .speed-num {
+  position: absolute;
+  bottom: 8px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--display);
+  font-size: 48px; color: var(--text);
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.speed-arc .speed-unit {
+  position: absolute;
+  bottom: -4px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* track map */
+.track-map-wrap {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px;
+  margin-bottom: 20px;
+}
+.track-map-wrap h3 {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px;
+}
+.track-svg { width: 100%; }
+
+/* recent sessions */
+.sessions-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.sess-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.sess-card:hover { border-color: var(--border2); }
+.sess-card .sc-name { font-size: 14px; font-weight: 500; }
+.sess-card .sc-car { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.sess-card .sc-best {
+  font-family: var(--mono); font-size: 15px;
+  color: var(--teal2); margin-top: 8px;
+}
+.sess-card .sc-laps { font-size: 11px; color: var(--muted); }
+.done-tag {
+  display: inline-block;
+  font-size: 10px; padding: 2px 7px;
+  border-radius: 4px; margin-bottom: 4px;
+  background: var(--s3); color: var(--muted);
+}
+.active-tag {
+  display: inline-block;
+  font-size: 10px; padding: 2px 7px;
+  border-radius: 4px; margin-bottom: 4px;
+  background: rgba(0,206,201,0.12);
+  color: var(--teal2);
+}
+
+/* RIGHT COLUMN — leaderboard */
+.col-right { padding: 20px; }
+
+.lb-entry {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px; margin-bottom: 5px;
+  border: 1px solid transparent;
+  transition: border-color 0.15s;
+  cursor: default;
+}
+.lb-entry:hover { border-color: var(--border); }
+.lb-entry.rank1 {
+  background: rgba(253,203,110,0.06);
+  border-color: rgba(253,203,110,0.2);
+}
+.lb-rank {
+  font-family: var(--mono); font-size: 13px;
+  color: var(--muted); width: 18px; text-align: center;
+  flex-shrink: 0;
+}
+.lb-rank.g { color: var(--amber); }
+.lb-rank.s { color: #b0b0b0; }
+.lb-rank.b { color: #cd8a4e; }
+.lb-av {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--s3);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+  color: var(--purple2); flex-shrink: 0;
+}
+.lb-info { flex: 1; min-width: 0; }
+.lb-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lb-car { font-size: 11px; color: var(--muted); }
+.lb-time {
+  font-family: var(--mono); font-size: 14px;
+  color: var(--teal2); font-weight: 500;
+}
+
+/* push offer panel */
+.offer-panel {
+  background: rgba(108,92,231,0.07);
+  border: 1px solid rgba(108,92,231,0.2);
+  border-radius: 12px; padding: 14px;
+  margin-top: 16px;
+}
+.offer-panel h4 {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--purple2); margin-bottom: 10px;
+}
+.offer-panel select {
+  width: 100%; padding: 8px 10px;
+  background: var(--s3);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  color: var(--text); font-family: var(--sans);
+  font-size: 12px; outline: none; margin-bottom: 8px;
+}
+.offer-panel select option { background: var(--s2); }
+.btn-push {
+  width: 100%; padding: 9px;
+  background: var(--purple); color: white;
+  border: none; border-radius: 8px;
+  font-family: var(--sans); font-size: 12px;
+  font-weight: 600; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-push:hover { opacity: 0.85; }
+.push-confirm {
+  display: none;
+  font-size: 12px; color: var(--teal2);
+  margin-top: 8px; text-align: center;
+}
+
+/* ── PLAYER SCREEN ── */
+.player-shell {
+  max-width: 420px; margin: 0 auto;
+  padding: 0 0 80px;
+}
+
+/* checkin */
+.ci-hero {
+  text-align: center;
+  padding: 52px 24px 36px;
+  position: relative;
+}
+.ci-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 300px; height: 200px;
+  background: radial-gradient(circle at 50% 0%, rgba(108,92,231,0.25), transparent 70%);
+  pointer-events: none;
+}
+.ci-logo {
+  font-family: var(--display);
+  font-size: 54px; letter-spacing: 3px;
+  color: var(--text); line-height: 1; margin-bottom: 4px;
+}
+.ci-logo span { color: var(--purple); }
+.ci-tagline { font-size: 13px; color: var(--muted); letter-spacing: 1px; }
+
+.ci-form {
+  padding: 0 20px;
+}
+.ci-field { margin-bottom: 14px; }
+.ci-field label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); display: block; margin-bottom: 6px;
+}
+.ci-field input, .ci-field select {
+  width: 100%; padding: 14px 16px;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 12px; color: var(--text);
+  font-family: var(--sans); font-size: 16px;
+  outline: none; transition: border-color 0.15s;
+  -webkit-appearance: none;
+}
+.ci-field input:focus, .ci-field select:focus {
+  border-color: var(--purple);
+}
+.ci-field select option { background: var(--s2); }
+.btn-race {
+  width: 100%; padding: 17px;
+  background: var(--purple); color: white;
+  border: none; border-radius: 14px;
+  font-family: var(--display); font-size: 20px;
+  letter-spacing: 2px;
+  cursor: pointer; margin-top: 6px;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-race:hover { opacity: 0.88; }
+.btn-race:active { transform: scale(0.98); }
+.btn-lb {
+  width: 100%; padding: 14px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text); border-radius: 14px;
+  font-family: var(--sans); font-size: 15px;
+  cursor: pointer; margin-top: 10px;
+  transition: border-color 0.15s;
+}
+.btn-lb:hover { border-color: var(--purple); }
+
+/* live session */
+.live-header-p {
+  background: var(--s1);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.live-header-p .pname { font-size: 16px; font-weight: 600; }
+.live-header-p .pcar { font-size: 12px; color: var(--muted); }
+.live-indicator {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--teal2);
+}
+
+.p-laptime-hero {
+  padding: 32px 24px 20px; text-align: center;
+}
+.p-lap-lbl {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 6px;
+}
+.p-lap-val {
+  font-family: var(--display);
+  font-size: 68px; letter-spacing: 3px;
+  color: var(--purple2); line-height: 1;
+  transition: color 0.3s;
+}
+.p-lap-val.flash { color: var(--teal2); }
+.p-best {
+  font-family: var(--mono); font-size: 18px;
+  color: var(--teal2); margin-top: 8px;
+}
+.p-best-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+.p-stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px; padding: 0 16px 20px;
+}
+.p-stat {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px; text-align: center;
+}
+.p-stat .psv {
+  font-family: var(--mono); font-size: 22px; font-weight: 500;
+}
+.p-stat .psl { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+.p-laps { padding: 0 16px; }
+.p-lap-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px; margin-bottom: 6px;
+  transition: border-color 0.2s;
+}
+.p-lap-item.is-pb {
+  border-color: rgba(85,239,196,0.4);
+  background: rgba(85,239,196,0.05);
+}
+.p-lap-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--s3); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 11px; color: var(--muted); flex-shrink: 0;
+}
+.p-lap-num.pb { background: rgba(85,239,196,0.15); color: var(--teal2); }
+.p-lap-time {
+  font-family: var(--mono); font-size: 19px;
+  font-weight: 500; flex: 1;
+}
+.pb-tag {
+  background: rgba(85,239,196,0.12);
+  color: var(--teal2); font-size: 10px;
+  font-weight: 600; padding: 3px 8px;
+  border-radius: 4px; letter-spacing: 0.5px;
+}
+.diff-tag { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+.btn-finish {
+  width: calc(100% - 32px); margin: 16px;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid rgba(255,118,117,0.3);
+  color: var(--red); border-radius: 12px;
+  font-family: var(--sans); font-size: 15px;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-finish:hover { background: rgba(255,118,117,0.07); }
+
+/* result */
+.result-wrap {
+  padding: 40px 24px 24px; text-align: center;
+}
+.result-flag { font-size: 56px; margin-bottom: 16px; }
+.result-name { font-family: var(--display); font-size: 36px; letter-spacing: 1px; }
+.result-car { font-size: 13px; color: var(--muted); margin-top: 2px; margin-bottom: 24px; }
+.rank-hero {
+  background: rgba(253,203,110,0.07);
+  border: 1px solid rgba(253,203,110,0.25);
+  border-radius: 14px; padding: 20px;
+  margin-bottom: 16px;
+}
+.rank-hero .rn {
+  font-family: var(--display);
+  font-size: 64px; color: var(--amber);
+  line-height: 1;
+}
+.rank-hero .rl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.result-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 0; overflow: hidden;
+  margin-bottom: 16px;
+}
+.result-row {
+  display: flex; justify-content: space-between;
+  align-items: center; padding: 13px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.result-row:last-child { border-bottom: none; }
+.result-row .rl { font-size: 13px; color: var(--muted); }
+.result-row .rv { font-family: var(--mono); font-size: 14px; font-weight: 500; }
+.result-row .rv.hl { color: var(--teal2); }
+.btn-again {
+  width: 100%; padding: 16px;
+  background: var(--purple); color: white;
+  border: none; border-radius: 12px;
+  font-family: var(--display); font-size: 18px;
+  letter-spacing: 2px; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-again:hover { opacity: 0.88; }
+.btn-see-lb {
+  width: 100%; padding: 14px; margin-top: 10px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text); border-radius: 12px;
+  font-family: var(--sans); font-size: 15px;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.btn-see-lb:hover { border-color: var(--purple); }
+
+/* player leaderboard screen */
+.plb-wrap { padding: 20px; max-width: 420px; margin: 0 auto; }
+.plb-wrap h2 {
+  font-family: var(--display);
+  font-size: 32px; letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.plb-wrap .sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.plb-entry {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 7px;
+}
+.plb-entry.rank1 {
+  background: rgba(253,203,110,0.06);
+  border-color: rgba(253,203,110,0.25);
+}
+.plb-entry.is-me {
+  border-color: rgba(108,92,231,0.4);
+  background: rgba(108,92,231,0.07);
+}
+.plb-pos {
+  font-family: var(--mono); font-size: 16px;
+  width: 22px; text-align: center; flex-shrink: 0;
+}
+.plb-pos.g { color: var(--amber); }
+.plb-pos.s { color: #b0b0b0; }
+.plb-pos.b { color: #cd8a4e; }
+.plb-av {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--s3); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; color: var(--purple2);
+  flex-shrink: 0;
+}
+.plb-av.me { background: var(--purple); color: white; }
+.plb-info { flex: 1; min-width: 0; }
+.plb-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.plb-car { font-size: 11px; color: var(--muted); }
+.plb-time { font-family: var(--mono); font-size: 16px; color: var(--teal2); font-weight: 500; }
+
+.btn-back {
+  width: 100%; padding: 14px; margin-top: 16px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text); border-radius: 12px;
+  font-family: var(--sans); font-size: 15px;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.btn-back:hover { border-color: var(--purple); }
+
+/* player nav */
+.p-nav {
+  position: fixed; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 420px; max-width: 100%;
+  background: rgba(15,15,28,0.95);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  display: flex;
+}
+.p-nav-btn {
+  flex: 1; padding: 12px 0;
+  background: none; border: none;
+  color: var(--muted); font-family: var(--sans);
+  font-size: 11px; cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 3px;
+  transition: color 0.15s;
+}
+.p-nav-btn svg { display: block; }
+.p-nav-btn.active { color: var(--purple2); }
+
+/* ── ABOUT SCREEN ── */
+.about-wrap {
+  max-width: 860px; margin: 0 auto; padding: 48px 32px;
+}
+.about-wrap h1 {
+  font-family: var(--display);
+  font-size: 56px; letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.about-wrap h1 span { color: var(--purple); }
+.about-sub {
+  font-size: 16px; color: var(--muted); margin-bottom: 40px;
+  line-height: 1.6; max-width: 560px;
+}
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px; margin-bottom: 40px;
+}
+.about-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px;
+}
+.about-card .ac-icon {
+  font-size: 28px; margin-bottom: 12px;
+}
+.about-card h3 {
+  font-size: 15px; font-weight: 600;
+  margin-bottom: 6px;
+}
+.about-card p {
+  font-size: 13px; color: var(--muted);
+  line-height: 1.6;
+}
+.stack-list {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px;
+  margin-bottom: 24px;
+}
+.stack-list h3 {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px;
+}
+.stack-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.stack-row:last-child { border-bottom: none; }
+.stack-tag {
+  background: rgba(108,92,231,0.15);
+  color: var(--purple2); font-family: var(--mono);
+  font-size: 12px; padding: 4px 10px;
+  border-radius: 6px; flex-shrink: 0; width: 120px;
+  text-align: center;
+}
+.stack-row .sd { font-size: 13px; color: var(--muted); }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeUp 0.35s ease both; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    SEND IT<span class="logo-dot">!</span>
+    <span class="logo-sub">Racing Platform</span>
+  </div>
+  <div class="topbar-tabs">
+    <button class="tab-btn active" onclick="showMain('venue')">Venue dashboard</button>
+    <button class="tab-btn" onclick="showMain('player')">Player app</button>
+    <button class="tab-btn" onclick="showMain('about')">About</button>
+  </div>
+  <div class="live-chip">
+    <div class="live-pip"></div>
+    Simulated live
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     VENUE SCREEN
+════════════════════════════════════════════════════ -->
+<div class="screen active" id="screen-venue">
+  <div class="venue-layout">
+
+    <!-- LEFT -->
+    <div class="col-left">
+      <!-- Telemetry -->
+      <div class="telem-hero">
+        <div class="lbl">Current lap</div>
+        <div class="laptime" id="v-laptime">0:00.000</div>
+        <div class="best" id="v-best">Best: —</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="sv" id="v-speed" style="color:var(--purple2)">0</div>
+          <div class="sl">km/h</div>
+        </div>
+        <div class="stat-card">
+          <div class="sv" id="v-gear">—</div>
+          <div class="sl">Gear</div>
+        </div>
+        <div class="stat-card">
+          <div class="sv" id="v-rpm" style="font-size:18px">—</div>
+          <div class="sl">RPM</div>
+        </div>
+        <div class="stat-card">
+          <div class="sv" id="v-laps" style="color:var(--teal2)">0</div>
+          <div class="sl">Laps today</div>
+        </div>
+      </div>
+
+      <div class="inputs-card">
+        <div class="section-head" style="margin-bottom:10px">Inputs</div>
+        <div class="input-row">
+          <div class="input-label">Throttle</div>
+          <div class="track"><div class="fill thr" id="v-thr" style="width:0%"></div></div>
+          <div class="input-val" id="v-thr-v">0%</div>
+        </div>
+        <div class="input-row">
+          <div class="input-label">Brake</div>
+          <div class="track"><div class="fill brk" id="v-brk" style="width:0%"></div></div>
+          <div class="input-val" id="v-brk-v">0%</div>
+        </div>
+      </div>
+
+      <!-- Session management -->
+      <div id="v-form-wrap">
+        <div class="section-head">Start session</div>
+        <div class="form-card">
+          <label>Player name</label>
+          <input type="text" id="v-pname" placeholder="Enter name" />
+          <label>Car</label>
+          <select id="v-car">
+            <option>Ferrari 488 GT3</option>
+            <option>Lamborghini Huracan GT3</option>
+            <option>McLaren 720S GT3</option>
+            <option>Porsche 911 GT3 R</option>
+            <option>BMW M4 GT3</option>
+            <option>Mercedes AMG GT3</option>
+            <option>Audi R8 LMS GT3</option>
+          </select>
+          <button class="btn-go" onclick="vStartSession()">Start session</button>
+        </div>
+      </div>
+
+      <div id="v-active-wrap" style="display:none">
+        <div class="section-head">Active session</div>
+        <div class="active-sess">
+          <div class="player-name" id="v-active-name">—</div>
+          <div class="car-name" id="v-active-car">—</div>
+          <div id="v-active-laps"></div>
+        </div>
+        <button class="btn-end" onclick="vEndSession()">End session</button>
+      </div>
+    </div>
+
+    <!-- CENTRE -->
+    <div class="col-centre">
+      <div class="section-head" style="margin-bottom:14px">Speed</div>
+      <div class="speed-arc-wrap">
+        <div class="speed-arc">
+          <svg width="220" height="120" viewBox="0 0 220 120">
+            <!-- track -->
+            <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="8" stroke-linecap="round"/>
+            <!-- fill -->
+            <path id="speed-arc-fill" d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="#6c5ce7" stroke-width="8" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="283"/>
+            <!-- needle dot -->
+            <circle id="speed-needle" cx="20" cy="110" r="6" fill="#a29bfe"/>
+          </svg>
+          <div class="speed-num" id="arc-speed">0</div>
+          <div class="speed-unit">km/h</div>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-bottom:12px">Track position</div>
+      <div class="track-map-wrap">
+        <h3>Circuit de Catalunya — live position</h3>
+        <svg class="track-svg" viewBox="0 0 500 220" style="height:130px">
+          <!-- track outline (simplified Catalunya shape) -->
+          <path d="M 60 150 L 60 80 Q 60 60 80 55 L 200 45 Q 230 42 240 55 L 260 90 Q 265 100 280 95 L 380 70 Q 410 65 420 85 L 430 120 Q 435 140 415 150 L 320 160 Q 295 165 290 180 L 285 195 Q 280 210 260 210 L 160 210 Q 140 210 135 195 L 120 170 Q 115 155 95 155 L 80 155 Q 60 155 60 150 Z"
+            fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="14" stroke-linejoin="round"/>
+          <path d="M 60 150 L 60 80 Q 60 60 80 55 L 200 45 Q 230 42 240 55 L 260 90 Q 265 100 280 95 L 380 70 Q 410 65 420 85 L 430 120 Q 435 140 415 150 L 320 160 Q 295 165 290 180 L 285 195 Q 280 210 260 210 L 160 210 Q 140 210 135 195 L 120 170 Q 115 155 95 155 L 80 155 Q 60 155 60 150 Z"
+            fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" stroke-linejoin="round"/>
+          <!-- car dot -->
+          <circle id="track-dot" cx="60" cy="110" r="7" fill="#6c5ce7"/>
+          <circle id="track-dot-glow" cx="60" cy="110" r="12" fill="rgba(108,92,231,0.25)"/>
+          <!-- start/finish -->
+          <line x1="58" y1="100" x2="58" y2="125" stroke="var(--amber)" stroke-width="2"/>
+          <text x="42" y="96" font-size="9" fill="rgba(253,203,110,0.7)" font-family="DM Mono">S/F</text>
+        </svg>
+      </div>
+
+      <div class="section-head" style="margin-bottom:12px">Recent sessions</div>
+      <div class="sessions-grid" id="v-sess-grid">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <!-- RIGHT — leaderboard -->
+    <div class="col-right">
+      <div class="section-head" style="margin-bottom:12px">Leaderboard</div>
+      <div id="v-lb"><!-- populated by JS --></div>
+
+      <div class="offer-panel">
+        <h4>Push token offer</h4>
+        <select id="offer-machine">
+          <option>AR Darts — Bay 1 (idle)</option>
+          <option>F1 Racing — Bay 2</option>
+          <option>Basketball hoop</option>
+        </select>
+        <select id="offer-tokens">
+          <option>2 free tokens</option>
+          <option>3 free tokens</option>
+          <option>5 free tokens</option>
+        </select>
+        <select id="offer-target">
+          <option>Nearby users (2 km)</option>
+          <option>Top 50 local players</option>
+          <option>Users 1000+ pts</option>
+        </select>
+        <button class="btn-push" onclick="pushOffer()">Push offer now →</button>
+        <div class="push-confirm" id="push-confirm">✓ Offer sent to 47 nearby players</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PLAYER SCREEN
+════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-player">
+
+  <!-- P-SCREEN: checkin -->
+  <div id="ps-checkin" class="player-shell fade-in">
+    <div class="ci-hero">
+      <div class="ci-logo">SEND IT<span>!</span></div>
+      <div class="ci-tagline">Racing · Player check-in</div>
+    </div>
+    <div class="ci-form">
+      <div class="ci-field">
+        <label>Your name</label>
+        <input type="text" id="p-name" placeholder="Enter your name" />
+      </div>
+      <div class="ci-field">
+        <label>Choose your car</label>
+        <select id="p-car">
+          <option>Ferrari 488 GT3</option>
+          <option>Lamborghini Huracan GT3</option>
+          <option>McLaren 720S GT3</option>
+          <option>Porsche 911 GT3 R</option>
+          <option>BMW M4 GT3</option>
+          <option>Mercedes AMG GT3</option>
+          <option>Audi R8 LMS GT3</option>
+        </select>
+      </div>
+      <button class="btn-race" onclick="pCheckIn()">GET ON TRACK</button>
+      <button class="btn-lb" onclick="pShowLB()">View leaderboard</button>
+    </div>
+  </div>
+
+  <!-- P-SCREEN: live -->
+  <div id="ps-live" style="display:none;" class="player-shell">
+    <div class="live-header-p">
+      <div>
+        <div class="pname" id="p-live-name">—</div>
+        <div class="pcar" id="p-live-car">—</div>
+      </div>
+      <div class="live-indicator">
+        <div class="live-pip"></div> Live
+      </div>
+    </div>
+    <div class="p-laptime-hero">
+      <div class="p-lap-lbl">Current lap</div>
+      <div class="p-lap-val" id="p-laptime">0:00.000</div>
+      <div class="p-best" id="p-best">—</div>
+      <div class="p-best-lbl">Personal best</div>
+    </div>
+    <div class="p-stats">
+      <div class="p-stat">
+        <div class="psv" id="p-speed">0</div>
+        <div class="psl">km/h</div>
+      </div>
+      <div class="p-stat">
+        <div class="psv" id="p-gear">—</div>
+        <div class="psl">Gear</div>
+      </div>
+      <div class="p-stat">
+        <div class="psv" id="p-laps">0</div>
+        <div class="psl">Laps</div>
+      </div>
+    </div>
+    <div class="p-laps">
+      <div class="section-head" style="margin-bottom:10px">Your laps</div>
+      <div id="p-lap-list"></div>
+    </div>
+    <button class="btn-finish" onclick="pFinish()">Finish session</button>
+  </div>
+
+  <!-- P-SCREEN: result -->
+  <div id="ps-result" style="display:none;" class="player-shell">
+    <div class="result-wrap">
+      <div class="result-flag">🏁</div>
+      <div class="result-name" id="r-name">—</div>
+      <div class="result-car" id="r-car">—</div>
+      <div class="rank-hero">
+        <div class="rn" id="r-rank">#—</div>
+        <div class="rl">Leaderboard position</div>
+      </div>
+      <div class="result-card">
+        <div class="result-row">
+          <span class="rl">Best lap</span>
+          <span class="rv hl" id="r-best">—</span>
+        </div>
+        <div class="result-row">
+          <span class="rl">Total laps</span>
+          <span class="rv" id="r-laps">—</span>
+        </div>
+        <div class="result-row">
+          <span class="rl">Car</span>
+          <span class="rv" id="r-result-car">—</span>
+        </div>
+      </div>
+      <button class="btn-again" onclick="pReset()">RACE AGAIN</button>
+      <button class="btn-see-lb" onclick="pShowLB()">See leaderboard</button>
+    </div>
+  </div>
+
+  <!-- P-SCREEN: leaderboard -->
+  <div id="ps-lb" style="display:none;" class="player-shell">
+    <div class="plb-wrap">
+      <h2>Leaderboard</h2>
+      <div class="sub">All-time best laps · All Send It venues</div>
+      <div id="p-lb-list"></div>
+      <button class="btn-back" onclick="pBackFromLB()">← Back</button>
+    </div>
+  </div>
+
+  <!-- Player bottom nav -->
+  <nav class="p-nav">
+    <button class="p-nav-btn active" id="pnav-checkin" onclick="pNavTo('checkin')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Check in
+    </button>
+    <button class="p-nav-btn" id="pnav-lb" onclick="pShowLB()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 20V10M12 20V4M18 20v-6"/></svg>
+      Leaderboard
+    </button>
+  </nav>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     ABOUT SCREEN
+════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-about">
+  <div class="about-wrap">
+    <h1>Send It<span>!</span> Racing</h1>
+    <p class="about-sub">A real-time racing platform that connects Assetto Corsa simulators to a live player network — scoring, leaderboards, and token rewards across every venue.</p>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="ac-icon">📡</div>
+        <h3>Live telemetry</h3>
+        <p>Reads Assetto Corsa UDP packets directly — speed, gear, throttle, brake, lap times — at 10hz. No plugins, no mods.</p>
+      </div>
+      <div class="about-card">
+        <div class="ac-icon">🏆</div>
+        <h3>Cross-venue leaderboard</h3>
+        <p>Every lap time is posted to a shared network. Players compete against drivers at every Send It venue simultaneously.</p>
+      </div>
+      <div class="about-card">
+        <div class="ac-icon">🎯</div>
+        <h3>Token economy</h3>
+        <p>Players earn tokens for every session. Venues push free plays to nearby users to fill idle machines on quiet nights.</p>
+      </div>
+    </div>
+
+    <div class="stack-list">
+      <h3>Technical stack</h3>
+      <div class="stack-row">
+        <div class="stack-tag">Node.js UDP</div>
+        <div class="sd">Listens on port 9996 — catches AC telemetry packets, detects lap completions automatically</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-tag">WebSocket</div>
+        <div class="sd">Broadcasts live data to venue and player apps in real time — leaderboard updates instantly on lap completion</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-tag">REST API</div>
+        <div class="sd">Express.js endpoints for session management, leaderboard queries, and venue controls</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-tag">Venue app</div>
+        <div class="sd">Staff dashboard — live telemetry, session start/end, leaderboard, push token offers to nearby players</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-tag">Player app</div>
+        <div class="sd">Mobile web — QR check-in, live lap timer, personal bests, cross-venue leaderboard position</div>
+      </div>
+    </div>
+
+    <p style="font-size:13px;color:var(--muted);line-height:1.7;">
+      This demo runs entirely in the browser with simulated telemetry. The production version connects to a real Assetto Corsa instance on the same local network. View the full source on GitHub.
+    </p>
+  </div>
+</div>
+
+<script>
+// ══ SHARED STATE ══════════════════════════════════════════
+const CARS = ['Ferrari 488 GT3','Lamborghini Huracan GT3','McLaren 720S GT3','Porsche 911 GT3 R','BMW M4 GT3','Mercedes AMG GT3','Audi R8 LMS GT3'];
+
+const leaderboard = [
+  { name:'Max K.',     car:'Ferrari 488 GT3',         lapMs:87234, lapDisplay:'1:27.234' },
+  { name:'Sam R.',     car:'Porsche 911 GT3 R',       lapMs:88102, lapDisplay:'1:28.102' },
+  { name:'Priya L.',   car:'McLaren 720S GT3',         lapMs:88740, lapDisplay:'1:28.740' },
+  { name:'Tom W.',     car:'Lamborghini Huracan GT3',  lapMs:89215, lapDisplay:'1:29.215' },
+  { name:'Jess M.',    car:'BMW M4 GT3',               lapMs:89887, lapDisplay:'1:29.887' },
+  { name:'Alex C.',    car:'Mercedes AMG GT3',         lapMs:90544, lapDisplay:'1:30.544' },
+  { name:'Ryan B.',    car:'Ferrari 488 GT3',          lapMs:91120, lapDisplay:'1:31.120' },
+];
+
+const recentSessions = [
+  { name:'Max K.',  car:'Ferrari 488 GT3',  best:'1:27.234', laps:6, status:'done' },
+  { name:'Sam R.',  car:'Porsche 911 GT3 R', best:'1:28.102', laps:4, status:'done' },
+  { name:'Priya L.',car:'McLaren 720S GT3',  best:'1:28.740', laps:5, status:'done' },
+  { name:'Tom W.',  car:'Lamborghini Huracan GT3', best:'1:29.215', laps:3, status:'done' },
+];
+
+let activeSession = null;
+let mySession = null;
+
+// ══ TELEMETRY SIMULATION ══════════════════════════════════
+const LAP_DURATION = 90000;
+const CORNERS = [0.08,0.22,0.38,0.52,0.66,0.80,0.91];
+let simStart = Date.now();
+let lapCount = 0;
+let bestLapMs = null;
+let lastLapMs = 0;
+let lapStartTime = Date.now();
+
+// Track path waypoints (simplified Catalunya loop)
+const trackPath = [
+  [60,115],[60,85],[65,68],[80,58],[130,50],[200,45],[230,43],[242,52],
+  [255,72],[260,88],[265,99],[278,96],[320,83],[360,72],[390,67],[413,72],
+  [425,88],[432,110],[434,128],[430,142],[418,151],[370,157],[330,160],
+  [300,163],[292,172],[287,185],[284,195],[278,207],[264,211],[220,211],
+  [175,211],[155,211],[142,205],[136,196],[126,178],[120,167],[113,158],
+  [98,155],[80,155],[68,153],[60,148],[60,115]
+];
+
+function getTrackPos(progress) {
+  const total = trackPath.length - 1;
+  const idx = progress * total;
+  const i = Math.floor(idx);
+  const t = idx - i;
+  const a = trackPath[Math.min(i, total)];
+  const b = trackPath[Math.min(i+1, total)];
+  return [a[0] + (b[0]-a[0])*t, a[1] + (b[1]-a[1])*t];
+}
+
+function getLapProfile(progress) {
+  let speed=185, thr=90, brk=0, gear=5;
+  for(const c of CORNERS) {
+    const d = Math.abs(progress - c);
+    if(d < 0.045) {
+      const bi = Math.max(0,1-d/0.045);
+      speed = Math.max(75, 185 - bi*115);
+      thr = Math.max(0, 90 - bi*90);
+      brk = bi * 95;
+      gear = speed>130?4:speed>90?3:2;
+      break;
+    }
+    if(d < 0.09 && progress > c) {
+      const ap = (progress - c - 0.045)/0.045;
+      speed = Math.min(210, 75 + ap*135);
+      thr = Math.min(100, ap*100);
+      brk = 0;
+      gear = speed>165?6:speed>130?5:4;
+      break;
+    }
+  }
+  speed += (Math.random()-.5)*8;
+  thr   += (Math.random()-.5)*5;
+  brk   += (Math.random()-.5)*4;
+  return {
+    speed:    Math.max(60,Math.min(240,speed)),
+    throttle: Math.max(0,Math.min(100,thr)),
+    brake:    Math.max(0,Math.min(100,brk)),
+    gear:     Math.max(1,Math.min(7,gear))
+  };
+}
+
+function msToDisplay(ms) {
+  if(!ms||ms<=0) return '--:--.---';
+  const m = Math.floor(ms/60000);
+  const s = Math.floor((ms%60000)/1000);
+  const ms3 = Math.floor(ms%1000);
+  return `${m}:${String(s).padStart(2,'0')}.${String(ms3).padStart(3,'0')}`;
+}
+
+function gearLabel(g) {
+  if(g===0) return 'N'; if(g===-1) return 'R'; return g??'—';
+}
+
+// Main sim tick
+setInterval(() => {
+  const now = Date.now();
+  const lapTimeMs = now - lapStartTime;
+  const progress = (lapTimeMs % LAP_DURATION) / LAP_DURATION;
+  const p = getLapProfile(progress);
+
+  // Lap completion
+  if(lapTimeMs >= LAP_DURATION) {
+    lastLapMs = lapTimeMs;
+    if(!bestLapMs || lapTimeMs < bestLapMs) bestLapMs = lapTimeMs;
+    lapCount++;
+    lapStartTime = Date.now();
+    onLapComplete(lastLapMs);
+  }
+
+  // Update venue UI
+  setText('v-laptime', msToDisplay(lapTimeMs));
+  setText('v-best', `Best: ${msToDisplay(bestLapMs)}`);
+  setText('v-speed', Math.round(p.speed));
+  setText('v-gear', gearLabel(p.gear));
+  setText('v-rpm', (Math.round(p.speed*78)).toLocaleString());
+  setText('v-laps', lapCount);
+  setBar('v-thr','v-thr-v', p.throttle);
+  setBar('v-brk','v-brk-v', p.brake);
+
+  // Update arc
+  const arcFrac = Math.min(p.speed/240, 1);
+  const arcLen = 283;
+  const fill = arcLen * arcFrac;
+  const arcEl = document.getElementById('speed-arc-fill');
+  if(arcEl) arcEl.setAttribute('stroke-dashoffset', arcLen - fill);
+  setText('arc-speed', Math.round(p.speed));
+
+  // Track dot
+  const [tx,ty] = getTrackPos(progress);
+  const dot = document.getElementById('track-dot');
+  const glow = document.getElementById('track-dot-glow');
+  if(dot) { dot.setAttribute('cx',tx); dot.setAttribute('cy',ty); }
+  if(glow) { glow.setAttribute('cx',tx); glow.setAttribute('cy',ty); }
+
+  // Update player UI if active
+  if(mySession) {
+    setText('p-laptime', msToDisplay(lapTimeMs));
+    setText('p-speed', Math.round(p.speed));
+    setText('p-gear', gearLabel(p.gear));
+    setText('p-laps', mySession.laps.length);
+    const pb = mySession.laps.length ? Math.min(...mySession.laps.map(l=>l.lapMs)) : null;
+    setText('p-best', pb ? msToDisplay(pb) : '—');
+  }
+
+}, 100);
+
+function onLapComplete(ms) {
+  if(activeSession) {
+    const lapNum = activeSession.laps.length + 1;
+    activeSession.laps.push({ lapNum, lapMs: ms, lapDisplay: msToDisplay(ms) });
+    if(!activeSession.bestLapMs || ms < activeSession.bestLapMs) activeSession.bestLapMs = ms;
+    renderActiveLaps();
+    // Flash venue laptime
+    const el = document.getElementById('v-laptime');
+    if(el) { el.style.color='var(--teal2)'; setTimeout(()=>el.style.color='',600); }
+  }
+  if(mySession) {
+    const lapNum = mySession.laps.length + 1;
+    mySession.laps.push({ lapNum, lapMs: ms, lapDisplay: msToDisplay(ms) });
+    renderPlayerLaps();
+    const el = document.getElementById('p-laptime');
+    if(el) { el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),600); }
+  }
+}
+
+// ══ VENUE ACTIONS ═════════════════════════════════════════
+function vStartSession() {
+  const name = document.getElementById('v-pname').value.trim();
+  const car = document.getElementById('v-car').value;
+  if(!name) { document.getElementById('v-pname').focus(); return; }
+  if(activeSession) { alert('End current session first'); return; }
+  activeSession = { playerName:name, car, laps:[], bestLapMs:null };
+  lapStartTime = Date.now(); lapCount = 0; bestLapMs = null;
+  document.getElementById('v-pname').value = '';
+  document.getElementById('v-form-wrap').style.display = 'none';
+  document.getElementById('v-active-wrap').style.display = 'block';
+  setText('v-active-name', name);
+  setText('v-active-car', car);
+  renderActiveLaps();
+}
+
+function vEndSession() {
+  if(!activeSession) return;
+  if(activeSession.bestLapMs) {
+    const entry = { name: activeSession.playerName, car: activeSession.car, lapMs: activeSession.bestLapMs, lapDisplay: msToDisplay(activeSession.bestLapMs) };
+    leaderboard.push(entry);
+    leaderboard.sort((a,b)=>a.lapMs-b.lapMs);
+    recentSessions.unshift({ name: activeSession.playerName, car: activeSession.car, best: msToDisplay(activeSession.bestLapMs), laps: activeSession.laps.length, status:'done' });
+    renderVenueLB();
+    renderSessionGrid();
+  }
+  activeSession = null;
+  document.getElementById('v-active-wrap').style.display = 'none';
+  document.getElementById('v-form-wrap').style.display = 'block';
+}
+
+function renderActiveLaps() {
+  const el = document.getElementById('v-active-laps');
+  if(!el || !activeSession) return;
+  const laps = activeSession.laps.slice(-4).reverse();
+  el.innerHTML = laps.map(l => {
+    const pb = l.lapMs === activeSession.bestLapMs;
+    return `<div class="lap-chip">
+      <span class="ln">Lap ${l.lapNum}</span>
+      <span class="lt ${pb?'pb':''}">${l.lapDisplay}${pb?' ★':''}</span>
+    </div>`;
+  }).join('');
+}
+
+function pushOffer() {
+  const confirm = document.getElementById('push-confirm');
+  confirm.style.display = 'block';
+  setTimeout(() => confirm.style.display='none', 3000);
+}
+
+// ══ PLAYER ACTIONS ════════════════════════════════════════
+function pCheckIn() {
+  const name = document.getElementById('p-name').value.trim();
+  const car = document.getElementById('p-car').value;
+  if(!name) { document.getElementById('p-name').focus(); return; }
+  mySession = { playerName:name, car, laps:[], bestLapMs:null };
+  lapStartTime = Date.now();
+  setText('p-live-name', name);
+  setText('p-live-car', car);
+  showPScreen('live');
+  pNavActive('live');
+}
+
+function pFinish() {
+  if(!mySession) return;
+  const pb = mySession.laps.length ? Math.min(...mySession.laps.map(l=>l.lapMs)) : null;
+  if(pb) {
+    const entry = { name: mySession.playerName, car: mySession.car, lapMs: pb, lapDisplay: msToDisplay(pb) };
+    leaderboard.push(entry);
+    leaderboard.sort((a,b)=>a.lapMs-b.lapMs);
+    renderVenueLB();
+  }
+  const rank = pb ? leaderboard.findIndex(e=>e.lapMs===pb && e.name===mySession.playerName)+1 : '—';
+  setText('r-name', mySession.playerName);
+  setText('r-car', mySession.car);
+  setText('r-best', msToDisplay(pb));
+  setText('r-laps', mySession.laps.length);
+  setText('r-result-car', mySession.car);
+  setText('r-rank', `#${rank}`);
+  showPScreen('result');
+  pNavActive('result');
+}
+
+function pReset() {
+  mySession = null;
+  document.getElementById('p-name').value = '';
+  showPScreen('checkin');
+  pNavActive('checkin');
+}
+
+function pShowLB() {
+  renderPLB();
+  showPScreen('lb');
+  pNavActive('lb');
+}
+
+function pBackFromLB() {
+  if(mySession) { showPScreen('live'); pNavActive('live'); }
+  else { showPScreen('checkin'); pNavActive('checkin'); }
+}
+
+function pNavTo(id) {
+  if(id==='checkin') { pReset(); }
+}
+
+function renderPlayerLaps() {
+  const el = document.getElementById('p-lap-list');
+  if(!el || !mySession) return;
+  const laps = mySession.laps.slice().reverse();
+  const pb = laps.length ? Math.min(...laps.map(l=>l.lapMs)) : null;
+  el.innerHTML = laps.map((lap,i) => {
+    const isPB = lap.lapMs === pb;
+    const prev = laps[i+1];
+    const diff = prev ? lap.lapMs - prev.lapMs : null;
+    const diffStr = diff!==null ? `${diff>0?'+':''}${(diff/1000).toFixed(3)}s` : '';
+    return `<div class="p-lap-item ${isPB?'is-pb':''}">
+      <div class="p-lap-num ${isPB?'pb':''}">${lap.lapNum}</div>
+      <div class="p-lap-time" style="color:${isPB?'var(--teal2)':'var(--text)'}">${lap.lapDisplay}</div>
+      ${isPB ? '<span class="pb-tag">PB</span>' : `<span class="diff-tag">${diffStr}</span>`}
+    </div>`;
+  }).join('');
+}
+
+function renderPLB() {
+  const el = document.getElementById('p-lb-list');
+  if(!el) return;
+  const pb = mySession?.laps.length ? Math.min(...mySession.laps.map(l=>l.lapMs)) : null;
+  el.innerHTML = leaderboard.slice(0,15).map((e,i) => {
+    const rank = i+1;
+    const isMe = mySession && e.name===mySession.playerName && e.lapMs===pb;
+    const pc = rank===1?'g':rank===2?'s':rank===3?'b':'';
+    const initials = e.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<div class="plb-entry ${rank===1?'rank1':''} ${isMe?'is-me':''}">
+      <div class="plb-pos ${pc}">${rank}</div>
+      <div class="plb-av ${isMe?'me':''}">${initials}</div>
+      <div class="plb-info">
+        <div class="plb-name">${e.name}${isMe?' (you)':''}</div>
+        <div class="plb-car">${e.car}</div>
+      </div>
+      <div class="plb-time">${e.lapDisplay}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══ RENDER VENUE ══════════════════════════════════════════
+function renderVenueLB() {
+  const el = document.getElementById('v-lb');
+  if(!el) return;
+  el.innerHTML = leaderboard.slice(0,12).map((e,i) => {
+    const rank = i+1;
+    const pc = rank===1?'g':rank===2?'s':rank===3?'b':'';
+    const initials = e.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<div class="lb-entry ${rank===1?'rank1':''}">
+      <div class="lb-rank ${pc}">${rank}</div>
+      <div class="lb-av">${initials}</div>
+      <div class="lb-info">
+        <div class="lb-name">${e.name}</div>
+        <div class="lb-car">${e.car}</div>
+      </div>
+      <div class="lb-time">${e.lapDisplay}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSessionGrid() {
+  const el = document.getElementById('v-sess-grid');
+  if(!el) return;
+  el.innerHTML = recentSessions.slice(0,4).map(s => `
+    <div class="sess-card">
+      <span class="${s.status==='active'?'active-tag':'done-tag'}">${s.status==='active'?'Active':'Done'}</span>
+      <div class="sc-name">${s.name}</div>
+      <div class="sc-car">${s.car}</div>
+      <div class="sc-best">${s.best}</div>
+      <div class="sc-laps">${s.laps} laps</div>
+    </div>`).join('');
+}
+
+// ══ HELPERS ═══════════════════════════════════════════════
+function setText(id, val) {
+  const e = document.getElementById(id);
+  if(e) e.textContent = val;
+}
+function setBar(fillId, valId, pct) {
+  const f = document.getElementById(fillId);
+  const v = document.getElementById(valId);
+  if(f) f.style.width = Math.min(pct,100)+'%';
+  if(v) v.textContent = Math.round(pct)+'%';
+}
+
+function showMain(tab) {
+  ['venue','player','about'].forEach(t => {
+    document.getElementById(`screen-${t}`).classList.toggle('active', t===tab);
+  });
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['venue','player','about'][i]===tab);
+  });
+  if(tab==='player' && !mySession) { showPScreen('checkin'); }
+}
+
+function showPScreen(id) {
+  ['checkin','live','result','lb'].forEach(s => {
+    const el = document.getElementById(`ps-${s}`);
+    if(el) el.style.display = (s===id)?'block':'none';
+  });
+}
+
+function pNavActive(id) {
+  ['checkin','lb'].forEach(n => {
+    const el = document.getElementById(`pnav-${n}`);
+    if(el) el.classList.toggle('active', n===id || (n==='checkin' && (id==='live'||id==='result')));
+  });
+}
+
+// ══ INIT ══════════════════════════════════════════════════
+renderVenueLB();
+renderSessionGrid();
+</script>
+</body>
+</html>
