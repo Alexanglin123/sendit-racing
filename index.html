@@ -1056,7 +1056,6 @@ body::before {
         <div><div class="vm-lbl">Sessions today</div><div class="vm-val" id="v-sess-count">4</div></div>
         <div class="v-live-badge"><div class="live-pip"></div> Live feed</div>
       </div>
-      <div style="padding:16px 0 0;">
       <div class="section-head" style="margin-bottom:14px">Speed</div>
       <div class="speed-arc-wrap">
         <div class="speed-arc">
@@ -1091,7 +1090,6 @@ body::before {
         </svg>
       </div>
 
-      </div>
       <div class="section-head" style="margin-bottom:12px">Recent sessions</div>
       <div class="sessions-grid" id="v-sess-grid">
         <!-- populated by JS -->
@@ -1613,9 +1611,9 @@ function vStartSession(name, car) {
   document.getElementById('v-pname').value = '';
   // Update status card
   const card = document.getElementById('v-sess-status-card');
-  card.innerHTML = \`<div class="player-name" id="v-active-name">\${name}</div>
-    <div class="car-name" id="v-active-car">\${car}</div>
-    <div id="v-active-laps"></div>\`;
+  card.innerHTML = `<div class="player-name" id="v-active-name">${name}</div>
+    <div class="car-name" id="v-active-car">${car}</div>
+    <div id="v-active-laps"></div>`;
   document.getElementById('v-btn-end').style.display = 'block';
   setText('v-status-txt', 'Active');
   renderActiveLaps();
@@ -1637,8 +1635,8 @@ function vEndSession() {
   activeSession = null;
   // Reset status card
   const card = document.getElementById('v-sess-status-card');
-  card.innerHTML = \`<div style="font-size:11px;color:#a08040;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Waiting for player</div>
-    <div style="font-size:13px;color:#fff9e6;opacity:0.5;">Player scans QR code on the machine to start automatically</div>\`;
+  card.innerHTML = `<div style="font-size:11px;color:#a08040;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Waiting for player</div>
+    <div style="font-size:13px;color:#fff9e6;opacity:0.5;">Player scans QR code on the machine to start automatically</div>`;
   document.getElementById('v-btn-end').style.display = 'none';
   setText('v-status-txt', 'Idle');
 }
