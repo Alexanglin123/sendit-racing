@@ -937,6 +937,95 @@ body::before {
   border: 1px solid rgba(255,238,50,0.3); border-radius: 20px; padding: 4px 10px;
 }
 
+
+/* ── PAYMENT SHEET ── */
+.pay-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.7); align-items: flex-end; justify-content: center;
+}
+.pay-overlay.open { display: flex; }
+
+.pay-sheet {
+  background: #1a1200; border-radius: 20px 20px 0 0;
+  border-top: 1px solid rgba(255,238,50,0.2);
+  width: 100%; max-width: 480px; padding: 0 0 32px;
+  animation: slideUp 0.28s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.pay-handle { width: 40px; height: 4px; background: rgba(255,238,50,0.2); border-radius: 2px; margin: 12px auto 20px; }
+.pay-title { font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #a08040; text-align: center; margin-bottom: 20px; }
+
+.pay-session-card {
+  margin: 0 20px 20px; background: #0e0a00;
+  border: 1px solid rgba(255,238,50,0.12); border-radius: 12px; overflow: hidden;
+}
+.pay-session-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-bottom: 1px solid rgba(255,238,50,0.06);
+}
+.pay-session-row:last-child { border-bottom: none; }
+.pay-session-label { font-size: 13px; color: #a08040; }
+.pay-session-val { font-size: 13px; font-weight: 500; color: #fff9e6; }
+.pay-session-price { font-family: var(--display); font-size: 22px; color: #ffee32; letter-spacing: 1px; }
+
+.pay-methods { padding: 0 20px 16px; }
+.pay-method-btn {
+  width: 100%; padding: 14px 20px; border-radius: 12px; border: 1px solid rgba(255,238,50,0.2);
+  background: #0e0a00; display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: all 0.15s; margin-bottom: 10px;
+}
+.pay-method-btn:hover { border-color: #ffee32; background: rgba(255,238,50,0.05); }
+.pay-method-btn.selected { border-color: #ffee32; background: rgba(255,238,50,0.08); }
+.pay-method-icon { font-size: 22px; flex-shrink: 0; }
+.pay-method-info { flex: 1; text-align: left; }
+.pay-method-name { font-size: 14px; font-weight: 500; color: #fff9e6; }
+.pay-method-sub { font-size: 11px; color: #a08040; margin-top: 2px; }
+.pay-method-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255,238,50,0.3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.pay-method-btn.selected .pay-method-check { background: #ffee32; border-color: #ffee32; }
+.pay-method-btn.selected .pay-method-check::after { content: '✓'; font-size: 11px; color: #0e0a00; font-weight: 700; }
+
+.pay-confirm-btn {
+  margin: 0 20px; width: calc(100% - 40px); padding: 16px;
+  background: #5c1a1a; color: #ffee32; border: none; border-radius: 12px;
+  font-family: var(--display); font-size: 20px; letter-spacing: 2px;
+  cursor: pointer; transition: opacity 0.15s; position: relative; overflow: hidden;
+}
+.pay-confirm-btn:hover { opacity: 0.9; }
+.pay-confirm-btn.processing { pointer-events: none; }
+.pay-processing-bar {
+  position: absolute; bottom: 0; left: 0; height: 3px;
+  background: #ffee32; width: 0%; transition: none;
+}
+.pay-confirm-btn.processing .pay-processing-bar { animation: progressFill 1.4s ease-in-out forwards; }
+@keyframes progressFill { from { width: 0%; } to { width: 100%; } }
+
+.pay-cancel { display: block; text-align: center; margin-top: 14px; font-size: 13px; color: #a08040; cursor: pointer; }
+.pay-cancel:hover { color: #ffee32; }
+
+.pay-success-flash {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: #0e0a00; align-items: center; justify-content: center;
+  flex-direction: column; gap: 12px;
+}
+.pay-success-flash.show { display: flex; }
+.pay-success-icon { font-size: 64px; animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+.pay-success-text { font-family: var(--display); font-size: 32px; letter-spacing: 3px; color: #ffee32; }
+.pay-success-sub { font-size: 13px; color: #a08040; }
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Price badge on check-in */
+.session-price-badge {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(92,26,26,0.4); border: 1px solid rgba(255,238,50,0.15);
+  border-radius: 10px; padding: 10px 16px; margin: 0 0 14px;
+}
+.spb-label { font-size: 11px; color: #a08040; text-transform: uppercase; letter-spacing: 0.8px; }
+.spb-price { font-family: var(--display); font-size: 22px; color: #ffee32; letter-spacing: 1px; }
+.spb-includes { font-size: 11px; color: #a08040; }
+
 /* scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -1165,7 +1254,14 @@ body::before {
           <option>Audi R8 LMS GT3</option>
         </select>
       </div>
-      <button class="btn-manual" onclick="pCheckIn()">GET ON TRACK</button>
+      <div class="session-price-badge">
+        <div>
+          <div class="spb-label">Session price</div>
+          <div class="spb-includes">Unlimited laps · ~20 min</div>
+        </div>
+        <div class="spb-price">$15</div>
+      </div>
+      <button class="btn-manual" onclick="openPaySheet()">PAY &amp; GET ON TRACK</button>
       <button class="btn-scan-demo" onclick="pSimulateScan()">Simulate QR scan →</button>
     </div>
   </div>
@@ -1357,6 +1453,78 @@ body::before {
       </div>
     </div>
   </div>
+
+
+<!-- ══ PAYMENT SHEET ══════════════════════════════════════════════ -->
+<div class="pay-overlay" id="pay-overlay" onclick="closePaySheetOutside(event)">
+  <div class="pay-sheet" id="pay-sheet">
+    <div class="pay-handle"></div>
+    <div class="pay-title">Confirm payment</div>
+
+    <div class="pay-session-card" id="pay-session-summary">
+      <div class="pay-session-row">
+        <span class="pay-session-label">Venue</span>
+        <span class="pay-session-val">The Doylo — Bay 2</span>
+      </div>
+      <div class="pay-session-row">
+        <span class="pay-session-label">Player</span>
+        <span class="pay-session-val" id="pay-player-name">—</span>
+      </div>
+      <div class="pay-session-row">
+        <span class="pay-session-label">Car</span>
+        <span class="pay-session-val" id="pay-player-car">—</span>
+      </div>
+      <div class="pay-session-row">
+        <span class="pay-session-label">Session</span>
+        <span class="pay-session-val">F1 Sim · ~20 min unlimited</span>
+      </div>
+      <div class="pay-session-row" style="background:rgba(92,26,26,0.3);">
+        <span class="pay-session-label">Total</span>
+        <span class="pay-session-price">$15.00</span>
+      </div>
+    </div>
+
+    <div class="pay-methods">
+      <div class="pay-method-btn selected" id="pm-apple" onclick="selectPayMethod('apple')">
+        <span class="pay-method-icon">🍎</span>
+        <div class="pay-method-info">
+          <div class="pay-method-name">Apple Pay</div>
+          <div class="pay-method-sub">Touch ID · Visa ••••4291</div>
+        </div>
+        <div class="pay-method-check"></div>
+      </div>
+      <div class="pay-method-btn" id="pm-google" onclick="selectPayMethod('google')">
+        <span class="pay-method-icon">🔵</span>
+        <div class="pay-method-info">
+          <div class="pay-method-name">Google Pay</div>
+          <div class="pay-method-sub">Mastercard ••••8847</div>
+        </div>
+        <div class="pay-method-check"></div>
+      </div>
+      <div class="pay-method-btn" id="pm-card" onclick="selectPayMethod('card')">
+        <span class="pay-method-icon">💳</span>
+        <div class="pay-method-info">
+          <div class="pay-method-name">Credit / Debit card</div>
+          <div class="pay-method-sub">Visa, Mastercard, Amex</div>
+        </div>
+        <div class="pay-method-check"></div>
+      </div>
+    </div>
+
+    <button class="pay-confirm-btn" id="pay-confirm-btn" onclick="confirmPayment()">
+      <span id="pay-btn-label">Pay $15.00</span>
+      <div class="pay-processing-bar" id="pay-bar"></div>
+    </button>
+    <span class="pay-cancel" onclick="closePaySheet()">Cancel</span>
+  </div>
+</div>
+
+<!-- Payment success flash -->
+<div class="pay-success-flash" id="pay-success">
+  <div class="pay-success-icon">🏁</div>
+  <div class="pay-success-text">PAID!</div>
+  <div class="pay-success-sub">Starting your session…</div>
+</div>
 
   <!-- Player bottom nav -->
   <nav class="p-nav">
@@ -1661,6 +1829,59 @@ function pushOffer() {
 }
 
 // ══ PLAYER ACTIONS ════════════════════════════════════════
+
+// ══ PAYMENT ═══════════════════════════════════════════════════════
+var selectedPayMethod = 'apple';
+
+function openPaySheet() {
+  var name = document.getElementById('p-name').value.trim();
+  var car  = document.getElementById('p-car').value;
+  if(!name) { document.getElementById('p-name').focus(); return; }
+  setText('pay-player-name', name);
+  setText('pay-player-car', car);
+  document.getElementById('pay-overlay').classList.add('open');
+}
+
+function closePaySheet() {
+  document.getElementById('pay-overlay').classList.remove('open');
+  // reset button
+  var btn = document.getElementById('pay-confirm-btn');
+  btn.classList.remove('processing');
+  setText('pay-btn-label', 'Pay $15.00');
+}
+
+function closePaySheetOutside(e) {
+  if(e.target === document.getElementById('pay-overlay')) closePaySheet();
+}
+
+function selectPayMethod(id) {
+  selectedPayMethod = id;
+  ['apple','google','card'].forEach(function(m) {
+    document.getElementById('pm-' + m).classList.toggle('selected', m === id);
+  });
+  var labels = { apple: 'Pay with Apple Pay', google: 'Pay with Google Pay', card: 'Pay $15.00' };
+  setText('pay-btn-label', labels[id] || 'Pay $15.00');
+}
+
+function confirmPayment() {
+  var btn = document.getElementById('pay-confirm-btn');
+  if(btn.classList.contains('processing')) return;
+  btn.classList.add('processing');
+  setText('pay-btn-label', 'Processing…');
+  // Simulate payment processing (1.4s)
+  setTimeout(function() {
+    closePaySheet();
+    // Show success flash
+    var flash = document.getElementById('pay-success');
+    flash.classList.add('show');
+    setTimeout(function() {
+      flash.classList.remove('show');
+      // Now actually check in
+      pCheckIn();
+    }, 1600);
+  }, 1450);
+}
+
 function pCheckIn() {
   const name = document.getElementById('p-name').value.trim();
   const car = document.getElementById('p-car').value;
